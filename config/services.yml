@@ -1,0 +1,9 @@
+services:
+    passwords.driver.password_ipb3:
+        class: digitalmzx\ipb3password\password_ipb3
+        arguments:
+            - '@config'
+            - '@passwords.driver_helper'
+        tags:
+            - { name: passwords.driver }
+
