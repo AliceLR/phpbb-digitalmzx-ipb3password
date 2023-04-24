@@ -51,12 +51,30 @@ class password_ipb3 extends \phpbb\passwords\driver\base
 	/**
 	 * Perform the equivalent of IPB 3.x's input sanitization routine.
 	 *
-	 * @param string $password an unsanitized string.
-	 * @return a string, sanitized in the manner of IPB 3.x
+	 * @param string $str an unsanitized string.
+	 * @return string a string, sanitized in the manner of IPB 3.x
 	 */
 	protected static function sanitize_ipb3_string(string $str): string
 	{
 		return preg_replace(array_keys(self::REPLACEMENTS), self::REPLACEMENTS, $str) ?? '';
+	}
+
+	/**
+	 * Reverse phpBB 3.1+'s password sanitization routine. phpBB uses
+	 * htmlspecialchars() with ENT_COMPAT on the password for no good reason,
+	 * which is reversable by replacing &quot; with ". phpBB would need to add
+	 * compatibility checks to all of their password drivers to change the
+	 * sanitization again, so this should be stable.
+	 *
+	 * The phpBB 2.x driver uses $_REQUEST['password'] instead. For some
+	 * reason, the phpBB 3.0 driver doesn't perform the same conversion.
+	 *
+	 * @param string $str a phpBB sanitized password string.
+	 * @return string the original unsanitized string.
+	 */
+	protected static function unsanitize_phpbb_string(string $str): string
+	{
+		return str_replace('&quot;', '"', $str);
 	}
 
 	/**
@@ -97,6 +115,9 @@ class password_ipb3 extends \phpbb\passwords\driver\base
 		$salt = substr($hash, 6 + 32);
 		$hash = substr($hash, 6, 32);
 
-		return strcmp($hash, md5(md5($salt) . md5(self::sanitize_ipb3_string($password)))) == 0;
+		$password = self::unsanitize_phpbb_string($password);
+		$password = self::sanitize_ipb3_string($password);
+
+		return strcmp($hash, md5(md5($salt) . md5($password))) == 0;
 	}
 }
