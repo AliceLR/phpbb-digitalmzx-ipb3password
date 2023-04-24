@@ -3,7 +3,7 @@
     "type": "phpbb-extension",
     "description": "Password driver for imported IP.Board 3 passwords.",
     "homepage": "https://github.com/AliceLR/phpbb-digitalmzx-ipb3password",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "time": "2023-04-22",
     "license": "GPL-2.0-plus",
     "authors": [
